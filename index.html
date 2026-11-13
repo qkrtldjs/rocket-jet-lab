@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="직접 그린 복합 추진기관을 바탕으로 흡입구, 압축기, 수소와 산소 밸브를 조작하는 교육용 웹 실험실.">
+  <meta name="theme-color" content="#10151c">
+  <title>ROCKET / JET — 복합 추진기관 실험실</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="graphics.css">
+  <script src="model.js" defer></script><script src="app.js" defer></script>
+  <script type="module" src="engine-3d.js"></script>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="./" aria-label="로켓 제트 실험실 홈"><span class="brand-symbol" aria-hidden="true">R<span>/</span>J</span><span>ROCKET / JET<small>COMBINED PROPULSION LAB</small></span></a>
+    <div class="top-meta"><span class="concept-label"><i></i>CONCEPT SIMULATOR</span><button class="text-button" id="method-open">모델 안내 ↗</button></div>
+  </header>
+  <main>
+    <div class="page-heading"><div><div class="eyebrow">주제탐구 B · ENGINE STUDY 01</div><h1>스케치를, 작동하는 엔진으로.</h1><p>장비를 조작하며 공기흡입 추진과 로켓 추진의 차이를 탐구하세요.</p></div><div class="heading-status"><span class="live-dot"></span>실시간 장비 실험실</div></div>
+    <div class="lab-layout">
+      <aside class="environment panel">
+        <div class="panel-title"><span class="section-number">01</span><h2>비행 환경</h2></div>
+        <div class="preset-stack"><button class="preset active" data-preset="air"><span class="preset-icon">↗</span><span>저고도 공기흡입<small>대기의 산소 이용</small></span><span class="preset-arrow">↗</span></button><button class="preset" data-preset="rocket"><span class="preset-icon">↑</span><span>고고도 로켓<small>탑재한 산화제 이용</small></span><span class="preset-arrow">↗</span></button></div>
+        <div class="control environment-control"><label for="altitude">고도 <output id="altitude-value">5.0 <span>km</span></output></label><input id="altitude" type="range" min="0" max="60" step="0.5" value="5"><div class="range-ends"><span>지표면</span><span>60 km</span></div></div>
+        <div class="control environment-control"><label for="mach">비행 속도 <output id="mach-value">0.8 <span>Mach</span></output></label><input id="mach" type="range" min="0" max="6" step="0.1" value="0.8"><div class="range-ends"><span>정지</span><span>극초음속</span></div></div>
+        <div class="atmosphere-readout"><span>대기 밀도</span><strong id="density-value">0.736 kg/m³</strong><div class="density-meter"><i id="density-bar"></i></div><small>고도가 높아지면 흡입할 공기가 줄어듭니다.</small></div>
+        <div class="procedure"><h3>실험 순서</h3><ol><li><span>1</span>비행 환경을 선택하세요.</li><li><span>2</span>연료·산화제 공급을 조절하세요.</li><li><span>3</span>점화 후 흐름과 상태를 확인하세요.</li></ol><p>엔진 부품을 누르면 해당 조작 장치를 찾을 수 있어요.</p></div>
+      </aside>
+      <section class="engine-column" aria-label="엔진 작동 화면">
+        <div class="engine-panel panel">
+          <div class="engine-top"><div><span class="section-number">02</span><h2>엔진 단면도</h2><span class="mode-tag" id="mode-label">공기흡입 구성</span></div><div class="engine-tools"><button class="icon-button" id="pause" aria-label="시뮬레이션 일시정지" title="시뮬레이션 일시정지">Ⅱ</button><button class="icon-button" id="reset" aria-label="실험 초기화" title="실험 초기화">↺</button></div></div>
+          <div class="visual-toolbar"><div class="view-switch" role="group" aria-label="엔진 보기 방식"><button id="view-3d" class="active" aria-pressed="true">3D 모델</button><button id="view-2d" aria-pressed="false">2D 단면도</button></div><div class="model-tools"><button id="shell-toggle" aria-pressed="false">외피 닫기</button><button id="camera-reset" aria-label="3D 시점 초기화">시점 초기화 ↺</button></div></div>
+          <div id="engine-3d-stage" class="engine-3d-stage">
+            <canvas id="engine-3d" role="img" aria-label="회전 가능한 3D 복합 추진기관. 화면을 드래그하여 시점을 조절할 수 있습니다."></canvas>
+            <div class="render-caption"><span class="live-dot"></span><span id="render-status">3D 모델 준비 중</span></div>
+            <div class="model-scale">ENGINE ASSEMBLY<br><span>이중 연소실 · 공통 노즐</span></div>
+            <button class="model-hotspot h2-hotspot" data-component="h2" data-anchor="h2" aria-label="3D 수소 연료 밸브 조작"><i></i>H₂ <span>수소</span></button>
+            <button class="model-hotspot o2-hotspot" data-component="o2" data-anchor="o2" aria-label="3D 산소 산화제 밸브 조작"><i></i>O₂ <span>산화제</span></button>
+            <button class="model-hotspot" data-component="compressor" data-anchor="compressor" aria-label="3D 압축기 조작"><i></i><span>압축기</span></button>
+            <button class="model-hotspot" data-component="cooling" data-anchor="cooling" aria-label="3D 연소실 냉각 조작"><i></i><span>연소실·냉각</span></button>
+            <div class="orbit-guide">드래그하여 회전 <span>·</span> 스크롤하여 확대</div>
+          </div>
+          <div class="diagram-wrap" id="schematic-stage" hidden>
+            <div class="diagram-coordinate top-left">SECTION A—A / NOT TO SCALE</div>
+            <svg id="engine" viewBox="0 0 1120 570" role="group" aria-label="앞쪽 흡입구와 압축기, 위아래 두 연소실, 수소 및 산소 탱크, 공통 노즐로 구성된 복합 추진기관">
+              <defs>
+                <linearGradient id="shell" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#35424e"/><stop offset=".45" stop-color="#171f28"/><stop offset="1" stop-color="#26333f"/></linearGradient>
+                <linearGradient id="tankMetal" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#344350"/><stop offset=".5" stop-color="#1d2934"/><stop offset="1" stop-color="#263541"/></linearGradient>
+                <linearGradient id="flame" x1="0" x2="1"><stop stop-color="#fff1b0"/><stop offset=".35" stop-color="#ffae56"/><stop offset="1" stop-color="#ff6d5d" stop-opacity="0"/></linearGradient>
+                <clipPath id="h2-clip"><rect x="395" y="48" width="155" height="89" rx="20"/></clipPath><clipPath id="o2-clip"><rect x="653" y="48" width="155" height="89" rx="20"/></clipPath>
+                <clipPath id="fan-clip"><ellipse cx="176" cy="342" rx="27" ry="91"/></clipPath>
+                <marker id="air-arrow" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0 0L7 4 0 8" fill="none" stroke="#63cde8" stroke-width="1.4"/></marker>
+              </defs>
+              <g class="diagram-structure" aria-hidden="true">
+                <line x1="34" y1="342" x2="1100" y2="342" class="centerline"/>
+                <path d="M93 237 Q265 217 418 231 L474 210 Q617 180 759 216 L851 250 L1022 290 L1022 394 L851 433 L759 468 Q617 504 474 475 L418 453 Q264 467 93 446 Z" fill="url(#shell)" stroke="#657582" stroke-width="2"/>
+                <path d="M114 254 L410 248 L467 231 M114 430 L410 437 L467 455" fill="none" stroke="#a9b3ba" stroke-opacity=".4"/>
+                <path d="M105 266 H388 Q438 266 467 248 L480 301 Q433 324 386 324 H105 Z M105 359 H386 Q433 359 480 382 L467 438 Q438 418 388 418 H105 Z" fill="#111a23" stroke="#43525f"/>
+                <path d="M111 342 Q222 300 390 326 L456 342 L390 358 Q222 385 111 342" fill="#465360" stroke="#9aa5af"/>
+                <ellipse cx="110" cy="342" rx="29" ry="105" fill="#131d26" stroke="#8b99a6" stroke-width="2"/>
+                <path d="M64 342 L113 323 Q142 342 113 361 Z" fill="#4c5c6b" stroke="#a5b4c0"/>
+                <g id="compressor-blades" stroke="#aab8c3" stroke-width="1.3" fill="#566775">
+                  <path d="M216 255L232 266L222 327L214 326Z M216 428L232 417L222 357L214 358Z"/><path d="M253 253L270 266L258 323L250 323Z M253 430L270 418L258 361L250 361Z"/><path d="M290 253L307 266L293 324L285 324Z M290 430L307 418L293 360L285 360Z"/><path d="M328 253L346 268L332 329L323 328Z M328 431L346 416L332 355L323 356Z"/><path d="M365 253L383 269L372 329L361 328Z M365 431L383 415L372 355L361 356Z"/>
+                </g>
+                <g clip-path="url(#fan-clip)"><g transform="translate(176 342) scale(.3 1)"><g id="rotor" fill="#8698a7" stroke="#ccd6df" stroke-width="1"><path d="M0-10Q-26-48-15-88L11-88L10-10Z"/><path d="M0-10Q-26-48-15-88L11-88L10-10Z" transform="rotate(45)"/><path d="M0-10Q-26-48-15-88L11-88L10-10Z" transform="rotate(90)"/><path d="M0-10Q-26-48-15-88L11-88L10-10Z" transform="rotate(135)"/><path d="M0-10Q-26-48-15-88L11-88L10-10Z" transform="rotate(180)"/><path d="M0-10Q-26-48-15-88L11-88L10-10Z" transform="rotate(225)"/><path d="M0-10Q-26-48-15-88L11-88L10-10Z" transform="rotate(270)"/><path d="M0-10Q-26-48-15-88L11-88L10-10Z" transform="rotate(315)"/></g></g></g>
+                <path d="M482 230Q526 216 588 221L718 232L769 262L720 306L590 307Q520 302 481 290Z M482 395Q524 381 588 380L718 382L769 422L720 459L590 465Q521 464 481 452Z" fill="#151b22" stroke="#b4b4aa" stroke-width="2"/>
+                <path d="M490 238Q560 219 638 235L706 244L735 265L702 292H572Q520 291 493 282Z M490 405Q560 387 638 396L706 399L735 422L702 449H572Q520 450 493 442Z" class="cooling-jacket"/>
+                <path d="M777 272L820 283L805 321L768 311Z M777 410L820 399L805 362L768 373Z" fill="#6d7b85" stroke="#a7b2b9"/>
+                <path d="M807 284Q875 291 903 317L1018 273L1018 411L903 366Q875 394 807 400L835 362V322Z" fill="#28333e" stroke="#8898a4" stroke-width="2"/>
+                <path d="M810 300Q875 304 902 330L1016 293 M810 385Q875 381 902 354L1016 392" stroke="#b4c4ce" stroke-width="2" fill="none"/>
+              </g>
+              <g class="pipes" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M472 139V177H422V484Q422 494 434 490L512 448 M422 199L511 244" class="pipe-base"/>
+                <path d="M730 138V183H784V199L688 232 M784 199V460Q788 524 712 524Q639 524 637 461" class="pipe-base"/>
+                <path data-pipe="h2" d="M472 139V177H422V484Q422 494 434 490L512 448 M422 199L511 244" class="flow-path hydrogen"/>
+                <path data-pipe="o2" d="M730 138V183H784V199L688 232 M784 199V460Q788 524 712 524Q639 524 637 461" class="flow-path oxygen"/>
+                <path id="air-top" data-pipe="air" d="M20 282H386Q438 282 465 263L513 260" class="flow-path air"/>
+                <path id="air-bottom" data-pipe="air" d="M20 403H386Q438 403 465 422L513 422" class="flow-path air"/>
+              </g>
+              <g id="burning" aria-hidden="true"><path id="flame-top" d="M525 248Q565 228 627 252Q690 253 730 266Q843 277 922 327L1112 342L929 333Q825 309 725 291Q615 289 525 282Z" fill="url(#flame)"/><path id="flame-bottom" d="M525 407Q565 387 627 411Q690 410 730 423Q843 413 922 358L1112 342L929 352Q825 381 725 448Q615 447 525 441Z" fill="url(#flame)"/><path data-pipe="exhaust" d="M555 269C790 263 837 304 1086 340 M555 426C790 431 837 380 1086 345" class="flow-path exhaust" fill="none"/></g>
+              <g fill="none" stroke="#ef9778" stroke-width="2"><ellipse cx="514" cy="261" rx="7" ry="19"/><ellipse cx="514" cy="424" rx="7" ry="19"/></g>
+              <g id="inlet-gate"><line x1="125" y1="249" x2="125" y2="317" stroke="#d1dbe2" stroke-width="8"/><line x1="125" y1="367" x2="125" y2="434" stroke="#d1dbe2" stroke-width="8"/></g>
+              <g class="diagram-component" data-component="h2" role="button" tabindex="0" aria-label="수소 연료 밸브 조작"><rect x="395" y="48" width="155" height="89" rx="20" fill="url(#tankMetal)" stroke="#828e98"/><rect id="h2-fill" x="395" y="86" width="155" height="51" clip-path="url(#h2-clip)" fill="#e7bc67" opacity=".18"/><text x="472" y="94" class="tank-label hydrogen-text">H₂</text><text x="472" y="119" class="tank-sub">수소 연료</text><circle cx="422" cy="192" r="14" class="valve hydrogen-valve"/><path d="M415 185L429 199M429 185L415 199" class="valve-cross"/></g>
+              <g class="diagram-component" data-component="o2" role="button" tabindex="0" aria-label="산소 산화제 밸브 조작"><rect x="653" y="48" width="155" height="89" rx="20" fill="url(#tankMetal)" stroke="#828e98"/><rect id="o2-fill" x="653" y="86" width="155" height="51" clip-path="url(#o2-clip)" fill="#b8d995" opacity=".18"/><text x="730" y="94" class="tank-label oxygen-text">O₂</text><text x="730" y="119" class="tank-sub">탑재 산화제</text><circle cx="784" cy="190" r="14" class="valve oxygen-valve"/><path d="M777 183L791 197M791 183L777 197" class="valve-cross"/></g>
+              <g class="diagram-labels"><text x="112" y="490">흡입구</text><text x="282" y="490">압축기</text><text x="602" y="351">상·하 연소실</text><text x="961" y="445">공통 노즐</text><text x="672" y="557" class="oxygen-text">탑재 산소 공급관</text></g>
+              <g class="diagram-component hit-target" data-component="inlet" role="button" tabindex="0" aria-label="흡입구 개방률 조작"><rect x="60" y="226" width="100" height="232" rx="20"/></g>
+              <g class="diagram-component hit-target" data-component="compressor" role="button" tabindex="0" aria-label="압축기 회전수 조작"><rect x="162" y="240" width="232" height="201" rx="15"/></g>
+              <g class="diagram-component hit-target" data-component="cooling" role="button" tabindex="0" aria-label="연소실 냉각 조작"><rect x="476" y="211" width="278" height="97" rx="20"/><rect x="476" y="379" width="278" height="91" rx="20"/></g>
+            </svg>
+            <div class="diagram-footer"><span class="flow-key air-key">공기</span><span class="flow-key h2-key">수소</span><span class="flow-key o2-key">탑재 산소</span><span class="flow-key exhaust-key">연소 가스</span><span class="diagram-hint">부품 클릭 → 장비 조작</span></div>
+          </div>
+          <div class="engine-status"><span class="status-light" id="status-light"></span><div><strong id="status-title">점화 대기</strong><span id="status-description">밸브 상태를 확인하고 점화하세요.</span></div><span class="timecode" id="timecode">T+ 00:00</span></div>
+        </div>
+        <div class="telemetry panel"><div class="telemetry-head"><div><span class="section-number">03</span><h2>실시간 계측</h2></div><span>상대 지수 · 0–100</span></div><div class="metrics"><div><span>추력 지수</span><strong id="thrust-value">0<small>/100</small></strong><div class="mini-meter"><i id="thrust-bar"></i></div></div><div><span>연소실 압력 지수</span><strong id="pressure-value">0<small>/100</small></strong><div class="mini-meter"><i id="pressure-bar"></i></div></div><div><span>벽면 열부하</span><strong id="heat-value">0<small>/100</small></strong><div class="mini-meter heat-meter"><i id="heat-bar"></i></div></div></div>
+          <div class="chart-head"><span>최근 60초 변화</span><div><span class="chart-key thrust-key">추력</span><span class="chart-key heat-key">열부하</span></div></div><canvas id="history" height="112" role="img" aria-label="최근 60초 동안 추력과 열부하 지수 변화"></canvas>
+        </div>
+      </section>
+      <aside class="equipment panel">
+        <div class="panel-title"><span class="section-number">04</span><h2>장비 조작</h2><span class="manual-tag">MANUAL</span></div>
+        <div class="control" data-control="inlet"><label for="inlet"><span>흡입구 개방률</span><output id="inlet-value">100%</output></label><input id="inlet" type="range" min="0" max="100" step="1" value="100"><div class="control-note">고고도 로켓 모드에서는 닫습니다.</div></div>
+        <div class="control" data-control="compressor"><label for="compressor"><span>압축기 구동</span><output id="compressor-value">80%</output></label><input id="compressor" type="range" min="0" max="100" step="1" value="80"><div class="control-note">실제 회전수 <span id="rpm-value">0%</span></div></div>
+        <div class="control fuel-control" data-control="h2"><label for="h2"><span><i class="control-dot hydrogen-dot"></i>수소 공급 밸브</span><output id="h2-value">48%</output></label><input id="h2" type="range" min="0" max="100" step="1" value="48"><div class="supply-line"><span id="h2-flow">0.000 kg/s</span><span>잔량 <b id="h2-remaining">100%</b></span></div></div>
+        <div class="control oxygen-control" data-control="o2"><label for="o2"><span><i class="control-dot oxygen-dot"></i>산소 공급 밸브</span><output id="o2-value">0%</output></label><input id="o2" type="range" min="0" max="100" step="1" value="0"><div class="supply-line"><span id="o2-flow">0.000 kg/s</span><span>잔량 <b id="o2-remaining">100%</b></span></div></div>
+        <div class="control" data-control="cooling"><label for="cooling"><span>재생 냉각 강도</span><output id="cooling-value">70%</output></label><input id="cooling" type="range" min="0" max="100" step="1" value="70"><div class="control-note">열부하를 낮추는 개념 제어값입니다.</div></div>
+        <div class="oxidizer-section"><div><span>산화제 공급 기여</span><strong id="mixture-label">공기 100%</strong></div><div class="oxidizer-meter"><i id="air-contribution"></i><i id="lox-contribution"></i></div><div class="supply-line"><span>대기 산소 <b id="air-oxygen">0.000 kg/s</b></span><span>O/F <b id="mixture-value">—</b></span></div></div>
+        <div class="ignition-controls"><button class="ignite-button" id="ignite"><span>◉</span><span id="ignite-label">엔진 점화</span><span>↗</span></button><button class="emergency-button" id="emergency">■ 비상 정지</button></div>
+      </aside>
+    </div>
+    <section class="event-strip"><div><span class="live-dot"></span><h2>이벤트 로그</h2></div><ol id="events" aria-live="polite"></ol><button class="text-button" id="export">실험 기록 CSV ↓</button></section>
+    <footer><span>사용자 스케치 기반 · 이중 연소실 / 공통 노즐 구조</span><span>교육용 개념 모델이며 실제 추력·안전성·궤도 도달을 검증하지 않습니다.</span></footer>
+  </main>
+  <dialog id="info-dialog"><div class="dialog-head"><h2 id="dialog-title">모델 안내</h2><button class="icon-button" id="dialog-close" aria-label="닫기">×</button></div><div id="dialog-content"></div></dialog>
+</body>
+</html>

@@ -1,2 +1,15 @@
-# rocket-jet-lab
-Interactive 3D combined air-breathing / rocket propulsion simulator · 복합 추진기관 실험실
+# ROCKET / JET — 복합 추진기관 실험실
+
+브라우저에서 흡입구, 압축기, 수소·산소 밸브, 냉각 및 점화를 조작하는 교육용 시뮬레이터입니다.
+
+## 실행
+
+https://qkrtldjs.github.io/rocket-jet-lab/
+
+- 실시간 3D 금속 모델, 드래그 회전·확대, 외피 개폐 및 2D 단면도
+- 고도·마하수 조절, 밸브 및 냉각 제어, 점화와 비상 정지
+- 실시간 계측 그래프와 CSV 실험 기록
+
+추력·압력·열부하는 교육용 상대 지수이며 실제 엔진 성능·제작 가능성·안전성을 검증하지 않습니다.
+
+Three.js 0.170.0을 포함합니다. 해당 라이선스는 [THREE-LICENSE.txt](THREE-LICENSE.txt)를 참고하세요.
